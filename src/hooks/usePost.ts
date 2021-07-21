@@ -1,9 +1,10 @@
 import {useQuery} from "react-query";
 import {setPostAction} from "../actions/postActions";
-import {Post, PostActionTypes, PostArray, PostType} from "../types";
+import {Post, PostActionTypes, PostArray} from "../types";
 import {useDispatch} from "react-redux";
 import {Dispatch} from "react";
-import {runDecoder} from "../helper";
+import * as Either from 'fp-ts/lib/Either';
+
 
 const fetchPosts  =async ()=> {
   const response = await fetch(
@@ -19,14 +20,17 @@ export default  function usePost(){
 
 
   if(result.status === 'success'){
+    try {
+      const decodedResult = PostArray.decode(result.data)
 
-    //TODO console.log: Remove when done
-    console.log('result data ====',result.data);
-
-    const decoded = runDecoder(PostType)(result.data[0])
-    console.log('decoded =======',decoded);
-
-    dispatch(setPostAction(result.data))
+      if(Either.isLeft(decodedResult)){
+        //report to sentry
+        throw new Error('Invalid data')
+      }
+      dispatch(setPostAction(decodedResult.right))
+    }catch (error){
+      console.log('error=====',error);
+    }
   }
 
   return result

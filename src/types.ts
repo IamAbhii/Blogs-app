@@ -1,7 +1,7 @@
 import * as io from "io-ts";
 
 export type Post = {
-  userId: string;
+  userId: number;
   id: number;
   title: string;
   body: string;
@@ -27,4 +27,4 @@ export const PostType = io.type({
 
 export const PostArray= io.array(PostType)
 
-export type PostIO = io.TypeOf<typeof PostType>;
+export type PostIO = io.TypeOf<typeof PostArray>;
