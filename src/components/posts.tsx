@@ -1,19 +1,20 @@
 import React from "react";
-import { Post } from "../types";
 import usePost from "../hooks/usePost";
+import {pipe} from 'fp-ts/lib/function';
+import {foldL} from "../helper";
+import PostList from "./postList";
 
 export function Posts() {
   const result = usePost()
 
-  if (result.status === "loading") return <h1>Loading ....</h1>;
-  if (result.status === "error") return <h1>Error .....</h1>;
-
   return (
     <div>
-      <ul>
-        {result.status === "success" &&
-        result.data.map((post: Post) => <li key={post.id}>{post.title}</li>)}
-      </ul>
+      {pipe(
+        result,foldL(
+        ()=><h1>Loading....</h1>,
+        (posts)=><PostList posts={posts}/>,
+        ()=><h1>Error....</h1>))
+      }
     </div>
   );
 }

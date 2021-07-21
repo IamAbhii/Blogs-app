@@ -14,10 +14,9 @@ const fetchPosts  =async ()=> {
   return response.json();
 }
 
-export default  function usePost(){
+export default function usePost(){
   const result = useQuery<Post[],Error>('post',fetchPosts)
   const dispatch = useDispatch<Dispatch<PostActionTypes>>()
-
 
   if(result.status === 'success'){
     try {
